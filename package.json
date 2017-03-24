@@ -1,0 +1,35 @@
+{
+  "name": "configr8",
+  "version": "1.0.0-alpha.0",
+  "description": ".rc-style configuration files for node",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*-test.js"
+  },
+  "keywords": [
+    "config",
+    "rc",
+    "environment",
+    "env",
+    "yargs",
+    "cli"
+  ],
+  "author": "Aaron Madsen <amadsen@codifiant.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "tape": "^4.6.3"
+  },
+  "dependencies": {
+    "async": "^2.1.4",
+    "deep-extend": "^0.4.1",
+    "globby": "^6.1.0",
+    "install": "^0.8.4",
+    "npm": "^4.1.2",
+    "os-homedir": "^1.0.2",
+    "pinkie-promise": "^2.0.1",
+    "pkg-conf": "^2.0.0",
+    "require-main-filename": "^1.0.1",
+    "strip-json-comments": "^2.0.1",
+    "yargs": "^6.6.0"
+  }
+}

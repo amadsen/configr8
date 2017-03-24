@@ -1,0 +1,9 @@
+{
+ // It's a comment!
+ "number": 1,
+ "bool": true,
+ "from": "etc",
+ ":defaults:": {
+  "fish": "trout"
+ }
+}
