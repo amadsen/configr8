@@ -1,6 +1,6 @@
 {
   "name": "configr8",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "description": ".rc-style configuration files for node",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,6 @@
     "async": "^2.1.4",
     "deep-extend": "^0.4.1",
     "globby": "^6.1.0",
-    "install": "^0.8.4",
     "npm": "^4.1.2",
     "os-homedir": "^1.0.2",
     "pinkie-promise": "^2.0.1",
