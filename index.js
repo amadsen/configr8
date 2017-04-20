@@ -90,12 +90,12 @@ function configr8 (metaConfig) {
     // return the the configuration resolution function
     return function configResolver(defaults, overrides, ready){
         var environment,
-            envVarPrefix = metaConfig.name.toUpperCase().replace(/[\W-]/g, '_') + '_';
+            envVarPrefix = name.toUpperCase().replace(/[-\W]/g, '_');
         overrides = overrides || {};
 
         environment = overrides.env ||
             overrides.environment ||
-            process.env[ envVarPrefix + 'ENV' ] ||
+            process.env[ envVarPrefix + '_ENV' ] ||
             process.env.ENV ||
             process.env.ENVIRONMENT ||
             process.env.NODE_ENV;
@@ -119,7 +119,7 @@ function configr8 (metaConfig) {
             if ( process.env[cachingEnvVar] ) {
                 fsConfig = parseConfigCachingEnv(process.env[cachingEnvVar]);
             }
-            return fsConfig || spawnSync(metaConfig, defaults, overrides, __filename);
+            return fsConfig || spawnSync(name, metaConfig, defaults, overrides, __filename);
         }
 
         var future;
@@ -179,7 +179,8 @@ function configr8 (metaConfig) {
                     overrides,
                     results.pkgObj,
                     results.envObj,
-                    results.argvObj
+                    results.argvObj,
+                    ready
                 )
             );
         });

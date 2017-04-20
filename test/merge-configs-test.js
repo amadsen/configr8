@@ -187,23 +187,24 @@ test('mergeConfigs() should return a function', function (assert) {
         // envCfg
         envCfg,
         // argvCfg
-        argvCfg
+        argvCfg,
+        function(err, merged) {
+            Object.keys(expected).forEach( function(key){
+                var actual = merged[key],
+                    reference = expected[key];
+                if ('_' === key) {
+                    return assert.equal(
+                        actual.errors[0].file,
+                        reference.errors[0].file,
+                        'Error sorted properly'
+                    );
+                }
+                return assert.equal(actual, reference, 'Key "' + key + '" is ' + reference);
+            });
+            assert.end();
+        }
     );
 
     assert.ok('function' === typeof fn, 'Synchronously returned function');
-    fn(null, files, function(err, merged) {
-        Object.keys(expected).forEach( function(key){
-            var actual = merged[key],
-                reference = expected[key];
-            if ('_' === key) {
-                return assert.equal(
-                    actual.errors[0].file,
-                    reference.errors[0].file,
-                    'Error sorted properly'
-                );
-            }
-            return assert.equal(actual, reference, 'Key "' + key + '" is ' + reference);
-        });
-        assert.end();
-    });
+    fn(null, files);
 });

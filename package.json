@@ -1,6 +1,6 @@
 {
   "name": "configr8",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": ".rc-style configuration files for node",
   "main": "index.js",
   "scripts": {
