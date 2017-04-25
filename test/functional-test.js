@@ -1,5 +1,8 @@
 var test = require('tape'),
-    fork = require('child_process').fork;
+    path = require('path'),
+    child_process = require('child_process'),
+    spawn = child_process.spawn,
+    fork = child_process.fork;
 
 var configr8 = require('../');
 
@@ -239,4 +242,90 @@ test('Should support configuration via environment variables for names with hyph
         assert.deepEqual(config, expected, 'Returned expected config from environment');
         assert.end();
     });
+});
+
+test('Should not error when run with --debug', function(assert){
+    var inspecting = spawn(
+        'node',
+        [
+            '--debug=9872',
+            path.join(__dirname, 'support', 'inspect-test-module.js'),
+            'foo'
+        ],
+        {});
+
+    var expected = { _: { errors: [] } };
+
+    inspecting.stderr
+        .on('data', function(data) {
+            console.error(`${data}`);
+        })
+        .on('error', function(err) {
+            console.error(err);
+            assert.fail(err);
+        });
+
+    var out = '';
+    inspecting.stdout
+        .on('data', function(data) {
+            out += data;
+        })
+        .on('error', function(err) {
+            console.error(err);
+            assert.fail(err);
+        });
+
+    inspecting
+        .on('exit', function(code) {
+            assert.equal(code, 0, 'Child process exited with 0 exit code');
+
+            assert.doesNotThrow( function(){
+                out = JSON.parse(out);
+            }, null, 'Config should JSON.parse()');
+            assert.deepEqual(out, expected, 'Got expected config');
+            assert.end();
+        });
+});
+
+test('Should not error when run with --inspect', function(assert){
+    var inspecting = spawn(
+        'node',
+        [
+            '--inspect=9872',
+            path.join(__dirname, 'support', 'inspect-test-module.js'),
+            'foo'
+        ],
+        {});
+
+    var expected = { _: { errors: [] } };
+
+    inspecting.stderr
+        .on('data', function(data) {
+            console.error(`${data}`);
+        })
+        .on('error', function(err) {
+            console.error(err);
+            assert.fail(err);
+        });
+
+    var out = '';
+    inspecting.stdout
+        .on('data', function(data) {
+            out += data;
+        })
+        .on('error', function(err) {
+            console.error(err);
+            assert.fail(err);
+        });
+
+    inspecting
+        .on('exit', function(code) {
+            assert.equal(code, 0, 'Child process exited with 0 exit code');
+
+            assert.doesNotThrow( function(){
+                out = JSON.parse(out);
+            }, null, 'Config should JSON.parse()');
+            assert.deepEqual(out, expected, 'Got expected config');
+            assert.end();
+        });
 });
