@@ -55,8 +55,8 @@ placed in a process.env property that can't easily come from common shells. This
 module would look for this variable first and, if present, simply read and
 JSON.parse() the already merged config from there.
 */
-function parseConfigCachingEnv(cacheJson){
-    try{
+function parseConfigCachingEnv (cacheJson) {
+    try {
         return JSON.parse(cacheJson);
     } catch(e) {
         return undefined;
@@ -67,7 +67,7 @@ function configr8 (metaConfig) {
     var name, cachingEnvVar;
     // metaConfig configures the configuration resolution function returned
     // by configr8
-    try{
+    try {
         metaConfig = resolveMetaConfig[ typeof metaConfig ](metaConfig);
     } catch(e) {
         return new Error('configr8 requires a name string or configuration object.');
@@ -119,7 +119,18 @@ function configr8 (metaConfig) {
             if ( process.env[cachingEnvVar] ) {
                 fsConfig = parseConfigCachingEnv(process.env[cachingEnvVar]);
             }
-            return fsConfig || spawnSync(name, metaConfig, defaults, overrides, __filename);
+            return fsConfig || (function (cfg) {
+                process.env[cachingEnvVar] = JSON.stringify(cfg);
+                return cfg;
+            })(
+                spawnSync(
+                    name,
+                    metaConfig,
+                    defaults,
+                    overrides,
+                    __filename
+                )
+            );
         }
 
         var future;
@@ -148,7 +159,7 @@ function configr8 (metaConfig) {
                     return done(null, {});
                 }
                 // Identify config from package.json
-                getPkgCfg(name, done);
+                getPkgCfg({ name: name, cwd: spawnSync.mainModuleDir() }, done);
             },
             envObj: function(done) {
                 // Identify config from process.argv
