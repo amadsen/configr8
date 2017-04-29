@@ -162,12 +162,12 @@ function configr8 (metaConfig) {
                 getPkgCfg({ name: name, cwd: spawnSync.mainModuleDir() }, done);
             },
             envObj: function(done) {
-                // Identify config from process.argv
+                // Identify config from process.env
                 setImmediate(done, null, (!metaConfig.useEnv? {} : getEnvCfg(envVarPrefix, metaConfig.structure)) );
             },
             argvObj: function(done) {
                 // Identify config from process.argv
-                setImmediate(done, null, (!metaConfig.useArgv? {} : getArgvCfg(metaConfig.structure)) );
+                setImmediate(done, null, (!metaConfig.useArgv? {} : getArgvCfg(process.argv, metaConfig.structure)) );
             },
             found: function(done) {
                 // Identify which config files actually exist

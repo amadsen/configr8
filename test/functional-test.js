@@ -244,6 +244,31 @@ test('Should support configuration via environment variables for names with hyph
     });
 });
 
+test('Should support configuration via command line arguments', function(assert) {
+    var argv = [
+        '--thing1=1',
+        '--thing2.bar=bar',
+        '--thing2.baz=baz'
+    ];
+
+    var expected = {
+        thing1: 1,
+        thing2: {
+            bar: 'bar',
+            baz: 'baz'
+        },
+        _: { errors: [] }
+    }
+    var child = fork(
+        './test/support/use-argv-test-module.js',
+        argv
+    );
+    child.on('message', function(config) {
+        assert.deepEqual(config, expected, 'Returned expected config from command line arguments');
+        assert.end();
+    });
+});
+
 test('Should not error when run with --debug', function(assert){
     var inspecting = spawn(
         'node',
