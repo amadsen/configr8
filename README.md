@@ -11,7 +11,7 @@ The two named pattern sets are:
 
 ### `"application"`
 The `"application"` patterns are appropriate for configuring an application. This is the default.
- 
+
 ~~~javascript
 [
     "${home}/.${name}rc",
@@ -23,7 +23,7 @@ The `"application"` patterns are appropriate for configuring an application. Thi
 
 ### `"per-directory"`
 The `"per-directory"` patterns are appropriate for configuring a tool that should act differently in different target directories.
- 
+
 ~~~javascript
 [
     "${parents}/.${name}rc",
@@ -48,7 +48,7 @@ Similarly, these same filesystem locations will be searched for "defaults" files
 
 ## Merging configuration
 
-Configuration defaults are merged by first taking the values under the `:defaults:` key in any standard configuration files, then configuration from any defaults configuration files, then the values under the `:defaults:` key in any environment specific configuration files. 
+Configuration defaults are merged by first taking the values under the `:defaults:` key in any standard configuration files, then configuration from any defaults configuration files, then the values under the `:defaults:` key in any environment specific configuration files.
 
 Environment specific configurations are merged with values under the `[":env:"][environment]` key path from any defaults configuration files, then values under the `[":env:"][environment]` key path from any standard configuration files, and finally the values in any environment specific configuration files.
 
@@ -83,17 +83,17 @@ Configr8 exports a (synchronous) function that allows you to provide `settings` 
 ## Use
 
 ~~~javascript
-var configReslover = require('configr8')('my-app');
+var configResolver = require('configr8')('my-app');
 
 var defaultConfig = {
 	fiz: 'buzz',
 	blah: {
-		blarg: 2
+		blarg: 2,
 		biz: 1
 	}
-}
+};
 
-var config = configReslover(defaultConfig);
+var config = configResolver(defaultConfig);
 
 //...
 ~~~
