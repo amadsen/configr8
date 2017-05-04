@@ -34,9 +34,71 @@ var settings = {
     etc: null,
     patterns: "application",
     async: false,
-    structure: {}/*,
-    reference-resolvers: []
+    structure: {},
+    /*
+    TODO: there are a few aspects to consider for referenceResolvers:
+    1. a pattern - "resolve|~" to search for in strings in the parsed object
+        that triggers a further lookup and parse to be merged in at that point.
+        Parsing would recursively feed back in to step 1. for all strings
+
+    2. patterns or references can be special URI's that are matched by thier
+        protocol against the defined referenceResolvers (protocols must be
+        unique) to read and parse the pattern or reference.
+        (When no protocol is provided we use "jsonfile:")
+
+       This likely looks something like
+           var ref = (/^resolve|>(.*)$/.exec(string) || [])[1];
+           if(ref){
+               ref = url.parse(ref);
+               // match against referenceResolvers for what to do
+           }
+
+    3. references are evaluated:
+        1. in the intially calculated patterns
+        2. agressively, before merging of initially resolved configs
+       This is because lazy evaluation may result in config from an overridden
+       reference not being merged, even though not all of it's values would
+       otherwise be overridden.
+
+    4. each reference resolver must define - under a key matching it's protocol
+    - a function which reads and parses the config for the reference. This
+    allows the user to parse things that are not json. This function's
+    return value will be substituted into the referencing object under the key
+    where the reference was found. References in patterns should always return a
+    javascript object that can be merged with those provided via argv, env,
+    package.json, and other resolved pattern objects. Parsers are expected to be
+    asynchronous pure functions. Where they can they should memoize using the
+    raw data directly or indirectly (ie through a hash functions). They should
+    return through the provided callback only.
+
+    The list contains functions that receive
+        `reference` - the original string reference (or pattern)
+        `callback` - a function that takes an `error` and a `config` option. If
+            this callback is called with:
+            + an error (error is not falsey) - the parser encountered an error.
+              This will immediately suspend config resolution
+            + no error and data (error is falsey and data is truthy) - the
+              parser has returned the parsed data
+            + no error and no data will also count as an error
+
+    Keep in mind that the function However, there are some use cases
+    where only a streaming parser can efficiently parse a data set.
+
+    For example, our built in module protocol matches strings starting with
+    "module". A reference or pattern using it would look something like:
+    `module:./path/to/module/or/name|string-argument`
     */
+    referenceResolvers: {
+        jsonfile,
+        module
+    },
+
+    /*
+    TODO: consider
+    - polling / watching configs and emitting an event when updates occur
+    - true turns it on. any falsey value turns it off.
+    */
+    watch: false
 };
 
 var resolveMetaConfig = {
@@ -179,6 +241,15 @@ function configr8 (metaConfig) {
             }
 
             return _async.map(
+                /*
+                TODO: get-matching-paths.js (which provides results.found),
+                process-each-file.js (eachFile()), and parse.js (used by
+                eachFile()) need to be migrated under the `jsonfile:` built in
+                reference resolver. We need to build the `module` built in
+                reference resolver. And we need to route each pattern to the
+                appropriate reference resolver for read, parse, and watching
+                logic while maintaining the original pattern order.
+                */
                 results.found,
                 // read each file that exists
                 eachFile,

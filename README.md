@@ -73,6 +73,8 @@ Configr8 exports a (synchronous) function that allows you to provide `settings` 
 + `etc` - Default: `null`. The path Configr8 should treat as the system configuration directory.
 + `patterns` - Default: `"application"`. The set of patterns to use to search for configuration files. (See [File Locations](#file-locations) above for details).
 + `async` - Default: `false`. Indicates whether Configr8's configuration resolver function should return a Promise if no callback function is provided. When `false` and no callback is provided the configuration resolver function will return the resolved configuration or an `Error` synchronously.
++ `referenceResolvers` - Default: `[]`. A list of objects containing
+	+ `test`	
 
 ## Installation
 
