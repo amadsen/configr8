@@ -34,6 +34,7 @@ var settings = {
     etc: null,
     patterns: "application",
     async: false,
+    timeout: undefined, // <- timeout for spawnSync
     structure: {}/*,
     reference-resolvers: []
     */
@@ -152,6 +153,35 @@ function configr8 (metaConfig) {
                 }
             });
         }
+
+        // establish a setTimeout for async timeout functionality
+        // ...and wrap ready to make sure it is only called once
+        if (metaConfig.timeout > 0) {
+            ready = (function (cb) {
+                function finish(err, config) {
+                    if (timer) {
+                        clearTimeout(timer);
+                        timer = null;
+                    }
+                    // call if not
+                    if('function' === typeof cb) {
+                        setImmediate(function(f){
+                            f(err, config);
+                        }, cb);
+                        // prevent calling again
+                        cb = null;
+                    }
+                }
+                var timer = setTimeout(finish, metaConfig.timeout, (function(){
+                    var timedOut = new Error('ETIMEDOUT - Gathering configuration took too long.');
+                    timedOut.code = timedOut.errno = 'ETIMEDOUT';
+                    return timedOut;
+                })());
+
+                return finish;
+            })(ready);
+        }
+
 
         _async.parallel({
             pkgObj: function(done) {

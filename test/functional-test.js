@@ -450,3 +450,37 @@ test('Should get correct config when run asynchronously with config in package.j
             assert.end();
         });
 });
+
+test('Should get ETIMEDOUT when run synchronously with too small a timeout', function(assert){
+    var fn = configr8({
+        // this name should be unique to avoid finding config cached on process.env
+        name: 'test-timeout-sync',
+        timeout: 1
+    });
+
+    r = fn({},{});
+
+    assert.ok(r instanceof Error && r.code === 'ETIMEDOUT', 'Returned expected ETIMEDOUT error');
+    assert.end();
+});
+
+test('Should get ETIMEDOUT when run asynchronously with too small a timeout', function(assert){
+    var fn = configr8({
+        // this name should be unique to avoid finding config cached on process.env
+        name: 'test-timeout-async',
+        timeout: 1,
+        async: true
+    });
+
+    fn({}, {})
+        .then( function (config) {
+            assert.fail('Did not time out');
+        })
+        .catch( function (err) {
+            assert.ok(
+                err instanceof Error && err.code === 'ETIMEDOUT',
+                'Returned expected ETIMEDOUT error'
+            );
+            assert.end();
+        });
+});
