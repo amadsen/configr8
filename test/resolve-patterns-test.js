@@ -3,11 +3,24 @@ var test = require('tape'),
 
 var resolvePatterns = require('../lib/resolve-patterns.js');
 
+function posixPath () {
+    var args = [].slice.call(arguments);
+
+    return path.posix.join.apply( path.posix,
+        [path.posix.sep].concat( path.join.apply(path, args)
+            .split( path.sep )
+            .filter( function (part, i) {
+                return !(i === 0 && /:/.test(part));
+            })
+        )
+    )
+}
+
 test('resolvePatterns() should substitute provided values for application patterns', function(assert){
     var expected = [
-        path.posix.join(__dirname, 'home', '.testrc'),
-        path.posix.join(__dirname, 'cwd', '.testrc'),
-        path.posix.join(__dirname, 'etc', 'testrc')
+        posixPath(__dirname, 'home', '.testrc'),
+        posixPath(__dirname, 'cwd', '.testrc'),
+        posixPath(__dirname, 'etc', 'testrc')
     ];
 
     var r = resolvePatterns({
@@ -31,11 +44,11 @@ test('resolvePatterns() should substitute provided values for per-directory patt
         > globby.sync('{/Users,/}/*.js');
         [ '/test.js' ]
         */
-        '{' + path.join(__dirname, 'cwd').split(path.sep).map( function(p, i, parts) {
+        '{' + posixPath(__dirname, 'cwd').split(path.posix.sep).map( function(p, i, parts) {
             return path.posix.join.apply(path.posix, ['/'].concat( parts.slice(0, (i > 0? -i : undefined) )) );
         }).join(',') + '}/.testrc',
-        path.posix.join(__dirname, 'home', '.testrc'),
-        path.posix.join(__dirname, 'etc', 'testrc')
+        posixPath(__dirname, 'home', '.testrc'),
+        posixPath(__dirname, 'etc', 'testrc')
     ];
 
     var r = resolvePatterns({
@@ -53,8 +66,8 @@ test('resolvePatterns() should substitute provided values for per-directory patt
 
 test('resolvePatterns() should remove patterns that it cannot fully substitute', function(assert){
     var expected = [
-        path.posix.join(__dirname, 'home', '.testrc'),
-        path.posix.join(__dirname, 'cwd', '.testrc')
+        posixPath(__dirname, 'home', '.testrc'),
+        posixPath(__dirname, 'cwd', '.testrc')
     ];
 
     var r = resolvePatterns({
@@ -71,8 +84,8 @@ test('resolvePatterns() should remove patterns that it cannot fully substitute',
 
 test('resolvePatterns() should not remove patterns that require name if it is not provided and flag is set', function(assert){
     var expected = [
-        path.posix.join(__dirname, 'home', '.${name}rc'),
-        path.posix.join(__dirname, 'cwd', '.${name}rc')
+        posixPath(__dirname, 'home', '.${name}rc'),
+        posixPath(__dirname, 'cwd', '.${name}rc')
     ];
 
     var r = resolvePatterns({
@@ -88,9 +101,9 @@ test('resolvePatterns() should not remove patterns that require name if it is no
 
 test('resolvePatterns() should substitute provided values for custom patterns', function(assert){
     var expected = [
-        path.posix.join(__dirname, 'home', 'config', 'test.json'),
-        path.posix.join(__dirname, 'home', '.test', 'config.json'),
-        path.posix.join(__dirname, 'cwd', 'config', 'test.json')
+        posixPath(__dirname, 'home', 'config', 'test.json'),
+        posixPath(__dirname, 'home', '.test', 'config.json'),
+        posixPath(__dirname, 'cwd', 'config', 'test.json')
     ];
 
     var patterns = [
@@ -113,7 +126,7 @@ test('resolvePatterns() should substitute provided values for custom patterns', 
 
 test('resolvePatterns() should substitute name with a trailing hyphen if name contains a hyphen', function(assert){
     var expected = [
-        path.posix.join(__dirname, 'home', '.hyphenated-test-rc')
+        posixPath(__dirname, 'home', '.hyphenated-test-rc')
     ];
 
     var patterns = [
@@ -134,7 +147,7 @@ test('resolvePatterns() should substitute name with a trailing hyphen if name co
 
 test('resolvePatterns() should substitute name without a trailing hyphen if it is immediatly followed by a period', function(assert){
     var expected = [
-        path.posix.join(__dirname, 'home', 'config', 'hyphenated-test.json')
+        posixPath(__dirname, 'home', 'config', 'hyphenated-test.json')
     ];
 
     var patterns = [
