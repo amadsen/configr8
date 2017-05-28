@@ -291,9 +291,14 @@ test('Should not error when run with --debug', function(assert){
         });
 
     var out = '';
+    var endRegEx = /=END=$/m;
     inspecting.stdout
         .on('data', function(data) {
             out += data;
+            if(endRegEx.test(out)){
+                inspecting.kill();
+                out = out.replace(endRegEx, '');
+            }
         })
         .on('error', function(err) {
             console.error(err);
@@ -302,15 +307,7 @@ test('Should not error when run with --debug', function(assert){
 
     inspecting
         .on('exit', function(code) {
-            // NOTE: --debug is deprecated, but we still need to test for it
-            // some IDEs still use it.
-            // Unfortunately, on windows we see exit code 3221225477, which
-            // appears to be a bug in child_process.spawn in some circustance
-            // or exit code 3, which is a bug related to node not being able to
-            // tell when a child process has ended cleanly.
-            code = (code === 3 || code === 3221225477)? 0 : code;
-            
-            assert.equal(code, 0, 'Child process exited with 0 exit code');
+            assert.equal(code, null, 'Child process exited with null exit code');
 
             assert.doesNotThrow( function(){
                 out = JSON.parse(out);
@@ -342,9 +339,14 @@ test('Should not error when run with --inspect', function(assert){
         });
 
     var out = '';
+    var endRegEx = /=END=$/m;
     inspecting.stdout
         .on('data', function(data) {
             out += data;
+            if(endRegEx.test(out)){
+                inspecting.kill();
+                out = out.replace(endRegEx, '');
+            }
         })
         .on('error', function(err) {
             console.error(err);
@@ -353,7 +355,7 @@ test('Should not error when run with --inspect', function(assert){
 
     inspecting
         .on('exit', function(code) {
-            assert.equal(code, 0, 'Child process exited with 0 exit code');
+            assert.equal(code, null, 'Child process exited with null exit code');
 
             assert.doesNotThrow( function(){
                 out = JSON.parse(out);

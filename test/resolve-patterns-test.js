@@ -1,20 +1,10 @@
 var test = require('tape'),
     path = require('path');
 
+// a utility function to make writing these tests easier
+var posixPath = require('./support/posix-path.js');
+
 var resolvePatterns = require('../lib/resolve-patterns.js');
-
-function posixPath () {
-    var args = [].slice.call(arguments);
-
-    return path.posix.join.apply( path.posix,
-        [path.posix.sep].concat( path.join.apply(path, args)
-            .split( path.sep )
-            .filter( function (part, i) {
-                return !(i === 0 && /:/.test(part));
-            })
-        )
-    )
-}
 
 test('resolvePatterns() should substitute provided values for application patterns', function(assert){
     var expected = [

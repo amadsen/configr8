@@ -16,8 +16,6 @@ test('For a readable, parsable file processEachFile() should return an object, w
             }
         };
 
-    console.log(file);
-
     processEachFile(file, function (err, r) {
         if (err) {
             return assert.end(err);
@@ -33,8 +31,6 @@ test('For an unreadable or unparsable file, processEachFile() should return an o
             file: file,
             error: {}
         };
-
-    console.log(file);
 
     processEachFile(file, function (err, r) {
         if (err) {
