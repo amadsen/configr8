@@ -1,5 +1,6 @@
 var test = require('tape'),
     path = require('path'),
+    semver = require('semver'),
     child_process = require('child_process'),
     spawn = child_process.spawn,
     fork = child_process.fork;
@@ -269,6 +270,7 @@ test('Should support configuration via command line arguments', function(assert)
     });
 });
 
+if (semver.lt(process.version, '7.7.0')) {
 test('Should not error when run with --debug', function(assert){
     var inspecting = spawn(
         'node',
@@ -291,6 +293,7 @@ test('Should not error when run with --debug', function(assert){
         });
 
     var out = '';
+    var startRegEx = /=START=/m;
     var endRegEx = /=END=$/m;
     inspecting.stdout
         .on('data', function(data) {
@@ -309,13 +312,17 @@ test('Should not error when run with --debug', function(assert){
         .on('exit', function(code) {
             assert.equal(code, null, 'Child process exited with null exit code');
 
+            var parts = out.split(startRegEx);
+            console.log(parts[0]);
+
             assert.doesNotThrow( function(){
-                out = JSON.parse(out);
+                out = JSON.parse(parts[1]);
             }, null, 'Config should JSON.parse()');
             assert.deepEqual(out, expected, 'Got expected config');
             assert.end();
         });
 });
+}
 
 test('Should not error when run with --inspect', function(assert){
     var inspecting = spawn(
@@ -339,6 +346,7 @@ test('Should not error when run with --inspect', function(assert){
         });
 
     var out = '';
+    var startRegEx = /=START=/m;
     var endRegEx = /=END=$/m;
     inspecting.stdout
         .on('data', function(data) {
@@ -357,8 +365,11 @@ test('Should not error when run with --inspect', function(assert){
         .on('exit', function(code) {
             assert.equal(code, null, 'Child process exited with null exit code');
 
+            var parts = out.split(startRegEx);
+            console.log(parts[0]);
+
             assert.doesNotThrow( function(){
-                out = JSON.parse(out);
+                out = JSON.parse(parts[1]);
             }, null, 'Config should JSON.parse()');
             assert.deepEqual(out, expected, 'Got expected config');
             assert.end();
@@ -392,6 +403,7 @@ test('Should get correct config when run synchronously with config in package.js
         });
 
     var out = '';
+    var startRegEx = /=START=/m;
     inspecting.stdout
         .on('data', function(data) {
             out += data;
@@ -405,8 +417,11 @@ test('Should get correct config when run synchronously with config in package.js
         .on('exit', function(code) {
             assert.equal(code, 0, 'Child process exited with 0 exit code');
 
+            var parts = out.split(startRegEx);
+            console.log(parts[0]);
+
             assert.doesNotThrow( function(){
-                out = JSON.parse(out);
+                out = JSON.parse(parts[1]);
             }, null, 'Config should JSON.parse()');
             assert.deepEqual(out, expected, 'Got expected config');
             assert.end();
@@ -440,6 +455,7 @@ test('Should get correct config when run asynchronously with config in package.j
         });
 
     var out = '';
+    var startRegEx = /=START=/m;
     inspecting.stdout
         .on('data', function(data) {
             out += data;
@@ -453,8 +469,11 @@ test('Should get correct config when run asynchronously with config in package.j
         .on('exit', function(code) {
             assert.equal(code, 0, 'Child process exited with 0 exit code');
 
+            var parts = out.split(startRegEx);
+            console.log(parts[0]);
+
             assert.doesNotThrow( function(){
-                out = JSON.parse(out);
+                out = JSON.parse(parts[1]);
             }, null, 'Config should JSON.parse()');
             assert.deepEqual(out, expected, 'Got expected config');
             assert.end();

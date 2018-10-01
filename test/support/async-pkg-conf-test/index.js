@@ -11,6 +11,7 @@ configr8({ name: 'foo' })({}, {}, function (err, config) {
         process.exit(1);
     }
 
+    console.log('=START=');
     console.log(
         JSON.stringify(
             config,

@@ -17,6 +17,7 @@
   "author": "Aaron Madsen <amadsen@codifiant.com>",
   "license": "MIT",
   "devDependencies": {
+    "semver": "^5.5.1",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.3"
   },
@@ -29,6 +30,7 @@
     "pkg-conf": "^2.0.0",
     "require-main-filename": "^1.0.1",
     "strip-json-comments": "^2.0.1",
+    "trike": "^1.1.1",
     "yargs": "^6.6.0"
   }
 }

@@ -7,6 +7,7 @@ if ( config instanceof Error ) {
     process.exit(1);
 }
 
+console.log('=START=');
 console.log(
     JSON.stringify(
         config,
