@@ -497,9 +497,7 @@ test('Should report config file errors in _.errors object', function(assert){
       "buzz": 4
     },
     _: { errors: [{
-      error: {
-        message: 'Unexpected token i in JSON at position 4'
-      },
+      error: {},
       file: path.join(__dirname, 'support', 'async-file-error-test/.foorc')
     }] }
   };
@@ -535,9 +533,14 @@ test('Should report config file errors in _.errors object', function(assert){
               out = JSON.parse(parts[1]);
           }, null, 'Config should JSON.parse()');
           var e = (((out._ || {}).errors || [])[0] || {}).error || {};
-          assert.ok(!!e.stack, 'Errors contain stack.');
+          assert.ok(!!e.stack, 'Error contains a stack.');
           delete e.stack;
-          assert.deepEqual(out, expected, 'Got expected config with error info in _.errors');
+          assert.ok(
+              /^Unexpected token i in JSON at position \d$/.test(e.message),
+              'Got expected error message'
+          );
+          delete e.message;
+          assert.deepEqual(out, expected, 'Got the rest of the expected config');
           assert.end();
       });
 });
