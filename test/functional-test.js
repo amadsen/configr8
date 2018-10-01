@@ -480,6 +480,68 @@ test('Should get correct config when run asynchronously with config in package.j
         });
 });
 
+test('Should report config file errors in _.errors object', function(assert){
+  var inspecting = spawn(
+      'node',
+      [
+          'index.js',
+          path.resolve( path.join(__dirname, '..') )
+      ],
+      {
+        cwd: path.join(__dirname, 'support', 'async-file-error-test')
+      });
+
+  var expected = {
+    "bar": 1,
+    "baz": {
+      "buzz": 4
+    },
+    _: { errors: [{
+      error: {
+        message: 'Unexpected token i in JSON at position 4'
+      },
+      file: path.join(__dirname, 'support', 'async-file-error-test/.foorc')
+    }] }
+  };
+
+  inspecting.stderr
+      .on('data', function(data) {
+          console.error(`${data}`);
+      })
+      .on('error', function(err) {
+          console.error(err);
+          assert.fail(err);
+      });
+
+  var out = '';
+  var startRegEx = /=START=/m;
+  inspecting.stdout
+      .on('data', function(data) {
+          out += data;
+      })
+      .on('error', function(err) {
+          console.error(err);
+          assert.fail(err);
+      });
+
+  inspecting
+      .on('exit', function(code) {
+          assert.equal(code, 0, 'Child process exited with 0 exit code');
+
+          var parts = out.split(startRegEx);
+          console.log(parts[0]);
+
+          assert.doesNotThrow( function(){
+              out = JSON.parse(parts[1]);
+          }, null, 'Config should JSON.parse()');
+          var e = (((out._ || {}).errors || [])[0] || {}).error || {};
+          assert.ok(!!e.stack, 'Errors contain stack.');
+          delete e.stack;
+          assert.deepEqual(out, expected, 'Got expected config with error info in _.errors');
+          assert.end();
+      });
+});
+
 test('Should get ETIMEDOUT when run synchronously with too small a timeout', function(assert){
     var fn = configr8({
         // this name should be unique to avoid finding config cached on process.env
