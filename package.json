@@ -1,6 +1,6 @@
 {
   "name": "configr8",
-  "version": "1.0.0-alpha.11",
+  "version": "1.0.0-alpha.12",
   "description": ".rc-style configuration files for node",
   "main": "index.js",
   "scripts": {
@@ -32,5 +32,16 @@
     "strip-json-comments": "^2.0.1",
     "trike": "^1.1.1",
     "yargs": "^6.6.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amadsen/configr8.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amadsen/configr8/issues"
+  },
+  "homepage": "https://github.com/amadsen/configr8#readme"
 }
