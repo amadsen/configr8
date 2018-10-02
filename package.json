@@ -1,6 +1,6 @@
 {
   "name": "configr8",
-  "version": "1.0.0-alpha.12",
+  "version": "1.0.0-alpha.13",
   "description": ".rc-style configuration files for node",
   "main": "index.js",
   "scripts": {
@@ -25,9 +25,10 @@
     "async": "^2.1.4",
     "deep-extend": "^0.4.1",
     "globby": "^6.1.0",
+    "load-json-file": "^5.1.0",
     "os-homedir": "^1.0.2",
     "pinkie-promise": "^2.0.1",
-    "pkg-conf": "^2.0.0",
+    "pkg-up": "^2.0.0",
     "require-main-filename": "^1.0.1",
     "strip-json-comments": "^2.0.1",
     "trike": "^1.1.1",

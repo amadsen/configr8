@@ -46,7 +46,8 @@ test('mergeConfigs() should return a function', function (assert) {
                 }
             }
         },
-        pkgCfg = {
+        pkgCfg = [{
+          conf: {
             ':defaults:': {
                 ':env:': {
                     'unit-test': {}
@@ -57,7 +58,9 @@ test('mergeConfigs() should return a function', function (assert) {
                     ':defaults:': {}
                 }
             }
-        },
+          },
+          file: 'package.json'
+        }],
         envCfg = {},
         argvCfg = {},
         overrides = {},
@@ -129,7 +132,7 @@ test('mergeConfigs() should return a function', function (assert) {
     // 0 - passed in defaults (excluding  specific defaults)
     addNumericProperties( defaults, expected, 'supplied defaults', 0, 28 );
     // 1 - defaults from pkgCfg
-    addNumericProperties( pkgCfg[':defaults:'], expected, 'package config defaults', 1, 28 );
+    addNumericProperties( pkgCfg[0]['conf'][':defaults:'], expected, 'package config defaults', 1, 28 );
     // 2-3 - defaults from base config files in order
     addNumericProperties( files[2].conf[':defaults:'], expected, '1/.my-cfg-rc defaults', 2, 28 );
     addNumericProperties( files[3].conf[':defaults:'], expected, '2/.my-cfg-rc defaults', 3, 28 );
@@ -139,10 +142,10 @@ test('mergeConfigs() should return a function', function (assert) {
     // 6-14 -  specific defaults from passed in defaults, pkgCfg,
     //  base config, and -defaults-rc files
     addNumericProperties( defaults[':env:']['unit-test'], expected, 'supplied defaults for environment', 6, 28 );
-    addNumericProperties( pkgCfg[':defaults:'][':env:']['unit-test'], expected, 'package config defaults for the environment', 7, 28 );
+    addNumericProperties( pkgCfg[0]['conf'][':defaults:'][':env:']['unit-test'], expected, 'package config defaults for the environment', 7, 28 );
     addNumericProperties( files[2].conf[':defaults:'][':env:']['unit-test'], expected, '1/.my-cfg-rc defaults for environment', 8, 28 );
     addNumericProperties( files[3].conf[':defaults:'][':env:']['unit-test'], expected, '2/.my-cfg-rc defaults for environment', 9, 28 );
-    addNumericProperties( pkgCfg[':env:']['unit-test'][':defaults:'], expected, 'package config environment-specific defaults', 10, 28 );
+    addNumericProperties( pkgCfg[0]['conf'][':env:']['unit-test'][':defaults:'], expected, 'package config environment-specific defaults', 10, 28 );
     addNumericProperties( files[2].conf[':env:']['unit-test'][':defaults:'], expected, '1/.my-cfg-rc environment-specific defaults', 11, 28 );
     addNumericProperties( files[3].conf[':env:']['unit-test'][':defaults:'], expected, '2/.my-cfg-rc environment-specific defaults', 12, 28 );
     addNumericProperties( files[0].conf[':env:']['unit-test'], expected, '1/.my-cfg-defaults-rc environment-specific values', 13, 28 );
@@ -151,12 +154,12 @@ test('mergeConfigs() should return a function', function (assert) {
     addNumericProperties( files[4].conf[':defaults:'], expected, '1/.my-cfg-unit-test-rc defaults (environment-specific file)', 15, 28 );
     addNumericProperties( files[5].conf[':defaults:'], expected, '2/.my-cfg-unit-test-rc defaults (environment-specific file)', 16, 28 );
     // base config from pkgCfg,
-    addNumericProperties( pkgCfg, expected, 'base package config', 17, 28 );
+    addNumericProperties( pkgCfg[0]['conf'], expected, 'base package config', 17, 28 );
     // base config from base config files in order,
     addNumericProperties( files[2].conf, expected, '1/.my-cfg-rc base config', 18, 28 );
     addNumericProperties( files[3].conf, expected, '2/.my-cfg-rc base config', 19, 28 );
     //  specific config from pkgCfg,
-    addNumericProperties( pkgCfg[':env:']['unit-test'], expected, 'environment-specific package config', 20, 28 );
+    addNumericProperties( pkgCfg[0]['conf'][':env:']['unit-test'], expected, 'environment-specific package config', 20, 28 );
 
     //  specific config from base config files in order,
     addNumericProperties( files[2].conf[':env:']['unit-test'], expected, '1/.my-cfg-rc environment-specific config', 21, 28 );

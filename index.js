@@ -8,10 +8,12 @@
 + default configuration from the configuration files
 + the defaults object you passed in.
 */
-var extend = require('deep-extend'),
+var path = require('path'),
+    extend = require('deep-extend'),
     _async = require('async'),
     osHomedir = require('os-homedir'),
-    Promise = require('pinkie-promise');
+    Promise = require('pinkie-promise'),
+    requireMain = require('require-main-filename');
 
 var getArgvCfg = require('./lib/get-argv-cfg.js'),
     getEnvCfg = require('./lib/get-env-cfg.js'),
@@ -84,8 +86,18 @@ function configr8 (metaConfig) {
     // create our environment variable for caching configs read from the file system
     cachingEnvVar = name + ':configr8:fs-configs';
 
-    // resolve our patterns as far as we can
+    // merge our metaConfig and settings
     metaConfig = extend({}, settings, metaConfig);
+
+    // add main module dir to metaConfig (if it isn't already set)
+    if (metaConfig.usePkg) {
+      metaConfig.pkgSearchDirs = metaConfig.pkgSearchDirs || [
+        path.dirname( requireMain() ),
+        process.cwd()
+      ];
+    }
+
+    // resolve our patterns as far as we can
     metaConfig.patterns = resolvePatterns(metaConfig, true);
 
     // return the the configuration resolution function
@@ -184,12 +196,12 @@ function configr8 (metaConfig) {
 
 
         _async.parallel({
-            pkgObj: function(done) {
+            pkgCfgs: function(done) {
                 if (!metaConfig.usePkg) {
                     return done(null, {});
                 }
                 // Identify config from package.json
-                getPkgCfg({ name: name, cwd: spawnSync.mainModuleDir() }, done);
+                getPkgCfg({ name: name, dirs: metaConfig.pkgSearchDirs }, done);
             },
             envObj: function(done) {
                 // Identify config from process.env
@@ -218,7 +230,7 @@ function configr8 (metaConfig) {
                     environment,
                     defaults,
                     overrides,
-                    results.pkgObj,
+                    results.pkgCfgs,
                     results.envObj,
                     results.argvObj,
                     ready

@@ -377,55 +377,109 @@ test('Should not error when run with --inspect', function(assert){
 });
 
 test('Should get correct config when run synchronously with config in package.json', function(assert){
-    var inspecting = spawn(
-        'node',
-        [
-            path.join(__dirname, 'support', 'pkg-conf-test/index.js'),
-            path.resolve( path.join(__dirname, '..') )
-        ],
-        {});
+  var inspecting = spawn(
+      'node',
+      [
+          path.join(__dirname, 'support', 'pkg-conf-test/index.js'),
+          path.resolve( path.join(__dirname, '..') )
+      ],
+      {});
 
-    var expected = {
-      "bar": 1,
-      "baz": {
-        "buzz": 4
-      },
-      _: { errors: [] }
-    };
+  var expected = {
+    "bar": 1,
+    "baz": {
+      "buzz": 4
+    },
+    _: { errors: [] }
+  };
 
-    inspecting.stderr
-        .on('data', function(data) {
-            console.error(`${data}`);
-        })
-        .on('error', function(err) {
-            console.error(err);
-            assert.fail(err);
-        });
+  inspecting.stderr
+      .on('data', function(data) {
+          console.error(`${data}`);
+      })
+      .on('error', function(err) {
+          console.error(err);
+          assert.fail(err);
+      });
 
-    var out = '';
-    var startRegEx = /=START=/m;
-    inspecting.stdout
-        .on('data', function(data) {
-            out += data;
-        })
-        .on('error', function(err) {
-            console.error(err);
-            assert.fail(err);
-        });
+  var out = '';
+  var startRegEx = /=START=/m;
+  inspecting.stdout
+      .on('data', function(data) {
+          out += data;
+      })
+      .on('error', function(err) {
+          console.error(err);
+          assert.fail(err);
+      });
 
-    inspecting
-        .on('exit', function(code) {
-            assert.equal(code, 0, 'Child process exited with 0 exit code');
+  inspecting
+      .on('exit', function(code) {
+          assert.equal(code, 0, 'Child process exited with 0 exit code');
 
-            var parts = out.split(startRegEx);
-            console.log(parts[0]);
+          var parts = out.split(startRegEx);
+          console.log(parts[0]);
 
-            assert.doesNotThrow( function(){
-                out = JSON.parse(parts[1]);
-            }, null, 'Config should JSON.parse()');
-            assert.deepEqual(out, expected, 'Got expected config');
-            assert.end();
-        });
+          assert.doesNotThrow( function(){
+              out = JSON.parse(parts[1]);
+          }, null, 'Config should JSON.parse()');
+          assert.deepEqual(out, expected, 'Got expected config');
+          assert.end();
+      });
+});
+
+test('Should get config from process.cwd()/package.json when run as CLI', function(assert){
+  var inspecting = spawn(
+      'node',
+      [
+          path.join(__dirname, 'support', 'cli-pkg-conf-test/foo-cli.js'),
+          path.resolve( path.join(__dirname, '..') )
+      ],
+      {
+        cwd: path.join(__dirname, 'support', 'pkg-conf-test/')
+      });
+
+  var expected = {
+    "bar": 1,
+    "baz": {
+      "buzz": 4
+    },
+    _: { errors: [] }
+  };
+
+  inspecting.stderr
+      .on('data', function(data) {
+          console.error(`${data}`);
+      })
+      .on('error', function(err) {
+          console.error(err);
+          assert.fail(err);
+      });
+
+  var out = '';
+  var startRegEx = /=START=/m;
+  inspecting.stdout
+      .on('data', function(data) {
+          out += data;
+      })
+      .on('error', function(err) {
+          console.error(err);
+          assert.fail(err);
+      });
+
+  inspecting
+      .on('exit', function(code) {
+          assert.equal(code, 0, 'Child process exited with 0 exit code');
+
+          var parts = out.split(startRegEx);
+          console.log(parts[0]);
+
+          assert.doesNotThrow( function(){
+              out = JSON.parse(parts[1]);
+          }, null, 'Config should JSON.parse()');
+          assert.deepEqual(out, expected, 'Got expected config');
+          assert.end();
+      });
 });
 
 test('Should get correct config when run asynchronously with config in package.json', function(assert){
