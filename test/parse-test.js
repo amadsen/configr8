@@ -2,7 +2,7 @@ var test = require('tape');
 
 var parse = require('../lib/parse.js');
 
-test('parse() should return an object from JSON with comments', function (assert) {
+test('parse() should return an object from JSON', function (assert) {
     var expected = {
             a: "b",
             c: 2,
@@ -10,13 +10,15 @@ test('parse() should return an object from JSON with comments', function (assert
         },
         expectedStr = JSON.stringify(expected, null, 2);
 
-    parse(expectedStr, function (err, r) {
-        if (err) {
-            return assert.end(err);
-        }
-        assert.same(r, expected, 'Asynchronously returned expected object');
-        assert.end();
-    });
+    var result = parse(expectedStr);
+    var err = result[0];
+    var r = result[1];
+
+    if (err) {
+        return assert.end(err);
+    }
+    assert.same(r, expected, 'Synchronously returned expected object');
+    assert.end();
 });
 
 test('parse() should return an object from JSON with single-line comments', function (assert) {
@@ -29,13 +31,15 @@ test('parse() should return an object from JSON with single-line comments', func
         expectedStr = JSON.stringify(expected, null, 2)
             .replace(/$/m, comment);
 
-    parse(expectedStr, function (err, r) {
-        if (err) {
-            return assert.end(err);
-        }
-        assert.same(r, expected, 'Asynchronously returned expected object');
-        assert.end();
-    });
+    var result = parse(expectedStr);
+    var err = result[0];
+    var r = result[1];
+
+    if (err) {
+        return assert.end(err);
+    }
+    assert.same(r, expected, 'Synchronously returned expected object');
+    assert.end();
 });
 
 test('parse() should return an object from JSON with multi-line comments', function (assert) {
@@ -48,11 +52,13 @@ test('parse() should return an object from JSON with multi-line comments', funct
         expectedStr = JSON.stringify(expected, null, 2)
             .replace(/$/m, comment);
 
-    parse(expectedStr, function (err, r) {
-        if (err) {
-            return assert.end(err);
-        }
-        assert.same(r, expected, 'Asynchronously returned expected object');
-        assert.end();
-    });
+    var result = parse(expectedStr);
+    var err = result[0];
+    var r = result[1];
+
+    if (err) {
+        return assert.end(err);
+    }
+    assert.same(r, expected, 'Synchronously returned expected object');
+    assert.end();
 });

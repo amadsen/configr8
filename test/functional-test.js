@@ -663,19 +663,6 @@ test('Should report config file errors in _.errors object', function(assert){
       });
 });
 
-test('Should get ETIMEDOUT when run synchronously with too small a timeout', function(assert){
-    var fn = configr8({
-        // this name should be unique to avoid finding config cached on process.env
-        name: 'test-timeout-sync',
-        timeout: 1
-    });
-
-    r = fn({},{});
-
-    assert.ok(r instanceof Error && r.code === 'ETIMEDOUT', 'Returned expected ETIMEDOUT error');
-    assert.end();
-});
-
 test('Should get ETIMEDOUT when run asynchronously with too small a timeout', function(assert){
     var fn = configr8({
         // this name should be unique to avoid finding config cached on process.env
@@ -695,4 +682,25 @@ test('Should get ETIMEDOUT when run asynchronously with too small a timeout', fu
             );
             assert.end();
         });
+});
+
+test('Should not get ETIMEDOUT when run asynchronously with large enough timeout', function(assert){
+  var fn = configr8({
+      // this name should be unique to avoid finding config cached on process.env
+      name: 'test-timeout-async',
+      timeout: 10000,
+      async: true
+  });
+
+  var expected = { _: { errors: [] } };
+
+  fn({}, {})
+      .then( function (config) {
+          assert.pass('Did not time out');
+          assert.deepEqual(config, expected, 'Should return expected config');
+          assert.end();
+      })
+      .catch( function (err) {
+          assert.end(err);
+      });
 });
