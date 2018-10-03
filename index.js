@@ -28,6 +28,7 @@ var settings = {
     // name, if not provided, will throw an error
     name: '',
     useArgv: false,
+    useArgvEnv: false,
     useEnv: true,
     usePkg: true,
     cwd: process.cwd(),
@@ -67,7 +68,7 @@ function parseConfigCachingEnv (cacheJson) {
 }
 
 function configr8 (metaConfig) {
-    var name, cachingEnvVar;
+    var name, cachingEnvVar, parsedArgv = {};
     // metaConfig configures the configuration resolution function returned
     // by configr8
     try {
@@ -99,19 +100,10 @@ function configr8 (metaConfig) {
 
     // resolve our patterns as far as we can
     metaConfig.patterns = resolvePatterns(metaConfig, true);
-
+    
     // return the the configuration resolution function
     return function configResolver(defaults, overrides, ready){
-        var environment,
-            envVarPrefix = name.toUpperCase().replace(/[-\W]/g, '_');
         overrides = overrides || {};
-
-        environment = overrides.env ||
-            overrides.environment ||
-            process.env[ envVarPrefix + '_ENV' ] ||
-            process.env.ENV ||
-            process.env.ENVIRONMENT ||
-            process.env.NODE_ENV;
 
         var readyIsFn = ('function' === typeof ready);
 
@@ -166,6 +158,23 @@ function configr8 (metaConfig) {
             });
         }
 
+        // handle argv parsing
+        if (metaConfig.useArgv) {
+          parsedArgv = getArgvCfg(process.argv, metaConfig.structure)
+        }
+
+        var environment,
+            envVarPrefix = name.toUpperCase().replace(/[-\W]/g, '_');
+
+        environment = parsedArgv.env ||
+            parsedArgv.environment ||
+            overrides.env ||
+            overrides.environment ||
+            process.env[ envVarPrefix + '_ENV' ] ||
+            process.env.ENV ||
+            process.env.ENVIRONMENT ||
+            process.env.NODE_ENV;
+
         // establish a setTimeout for async timeout functionality
         // ...and wrap ready to make sure it is only called once
         if (metaConfig.timeout > 0) {
@@ -209,7 +218,7 @@ function configr8 (metaConfig) {
             },
             argvObj: function(done) {
                 // Identify config from process.argv
-                setImmediate(done, null, (!metaConfig.useArgv? {} : getArgvCfg(process.argv, metaConfig.structure)) );
+                setImmediate(done, null, (!metaConfig.useArgv? {} : parsedArgv) );
             },
             found: function(done) {
                 // Identify which config files actually exist

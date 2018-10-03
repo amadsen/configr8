@@ -270,6 +270,70 @@ test('Should support configuration via command line arguments', function(assert)
     });
 });
 
+test('Should support configuration environment via --env command line argument', function(assert) {
+  var argv = [
+      '--env',
+      't1',
+      '--thing1=1',
+      '--thing2.bar=bar',
+      '--thing2.baz=baz'
+  ];
+
+  var expected = {
+      env: 't1',
+      thing1: 1,
+      thing2: {
+          bar: 'bar',
+          baz: 'baz'
+      },
+      thing3: "Nothing",
+      _: { errors: [] }
+  }
+  var child = fork(
+      'index.js',
+      argv,
+      {
+        cwd: path.join(__dirname, 'support', 'use-argv-env-test')
+      }
+  );
+  child.on('message', function(config) {
+      assert.deepEqual(config, expected, 'Returned expected config from command line arguments');
+      assert.end();
+  });
+});
+
+test('Should support configuration environment via --environment command line argument', function(assert) {
+  var argv = [
+      '--environment',
+      't2',
+      '--thing1=1',
+      '--thing2.bar=bar',
+      '--thing2.baz=baz'
+  ];
+
+  var expected = {
+      environment: 't2',
+      thing1: 1,
+      thing2: {
+          bar: 'bar',
+          baz: 'baz'
+      },
+      thing3: "Nothing at all",
+      _: { errors: [] }
+  }
+  var child = fork(
+      'index.js',
+      argv,
+      {
+        cwd: path.join(__dirname, 'support', 'use-argv-env-test')
+      }
+  );
+  child.on('message', function(config) {
+      assert.deepEqual(config, expected, 'Returned expected config from command line arguments');
+      assert.end();
+  });
+});
+
 if (semver.lt(process.version, '7.7.0')) {
 test('Should not error when run with --debug', function(assert){
     var inspecting = spawn(
