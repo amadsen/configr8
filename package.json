@@ -1,6 +1,6 @@
 {
   "name": "configr8",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": ".rc-style configuration files for node",
   "main": "index.js",
   "scripts": {
@@ -18,12 +18,12 @@
   "license": "MIT",
   "devDependencies": {
     "semver": "^5.5.1",
-    "tap-spec": "^4.1.1",
+    "tap-spec": "^5.0.0",
     "tape": "^4.6.3"
   },
   "dependencies": {
-    "async": "^2.1.4",
-    "deep-extend": "^0.4.1",
+    "async": "^2.6.1",
+    "deep-extend": "^0.5.1",
     "globby": "^6.1.0",
     "load-json-file": "^5.1.0",
     "os-homedir": "^1.0.2",
