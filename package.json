@@ -26,7 +26,6 @@
     "deep-extend": "^0.6.0",
     "globby": "^11.0.1",
     "load-json-file": "^6.2.0",
-    "os-homedir": "^2.0.0",
     "pinkie-promise": "^2.0.1",
     "pkg-up": "^3.1.0",
     "require-main-filename": "^2.0.0",

@@ -10,7 +10,7 @@
 */
 var path = require('path'),
     extend = require('deep-extend'),
-    osHomedir = require('os-homedir'),
+    osHomedir = require('os').homedir(),
     requireMain = require('require-main-filename');
 
 var configResolver = require('./lib/config-resolver.js'),
@@ -24,7 +24,7 @@ var settings = {
   useEnv: true,
   usePkg: true,
   cwd: process.cwd(),
-  home: osHomedir(),
+  home: osHomedir,
   // We allow setting the etc directory to make it easier to test.
   etc: null,
   patterns: "application",
